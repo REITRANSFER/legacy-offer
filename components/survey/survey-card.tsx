@@ -1,8 +1,43 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Home, ArrowRight, ArrowLeft, Check, XCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import type { LucideIcon } from "lucide-react"
+import {
+  Home,
+  Building2,
+  Building,
+  Truck,
+  Map as MapIcon,
+  HelpCircle,
+  User,
+  Heart,
+  AlertTriangle,
+  ShieldCheck,
+  Briefcase,
+  Tag,
+  Zap,
+  CalendarClock,
+  CalendarDays,
+  Hourglass,
+  Eye,
+  Sparkles,
+  Smile,
+  Wrench,
+  HardHat,
+  Anchor,
+  Gift,
+  Split,
+  Plane,
+  Shrink,
+  Hammer,
+  Sprout,
+  TreePine,
+  Crown,
+  ChevronRight,
+  ArrowRight,
+  Check,
+  XCircle,
+} from "lucide-react"
 import { captureTrackingData, getIPAddress } from "@/lib/tracking"
 import { Input } from "@/components/ui/input"
 import { AddressAutocomplete, type AddressDetails, type ServiceArea } from "./address-autocomplete"
@@ -24,58 +59,58 @@ interface SurveyData {
 }
 
 const PROPERTY_TYPE_OPTIONS = [
-  { id: "single-family", label: "Single Family Home" },
-  { id: "multi-family", label: "Multi-Family (Duplex, Triplex, etc.)" },
-  { id: "condo-townhouse", label: "Condo / Townhouse" },
-  { id: "mobile-home", label: "Mobile / Manufactured Home" },
-  { id: "land", label: "Vacant Land / Lot" },
-  { id: "other", label: "Other" },
+  { id: "single-family", label: "Single Family Home", icon: Home },
+  { id: "multi-family", label: "Multi-Family (Duplex, Triplex, etc.)", icon: Building2 },
+  { id: "condo-townhouse", label: "Condo / Townhouse", icon: Building },
+  { id: "mobile-home", label: "Mobile / Manufactured Home", icon: Truck },
+  { id: "land", label: "Vacant Land / Lot", icon: MapIcon },
+  { id: "other", label: "Other", icon: HelpCircle },
 ]
 
 const LEGAL_OWNER_OPTIONS = [
-  { id: "yes-owner", label: "Yes, I am the legal homeowner" },
-  { id: "yes-family", label: "Yes, I am a family member with the legal right to sell" },
-  { id: "no", label: "No, I am not" },
+  { id: "yes-owner", label: "Yes, I am the legal homeowner", icon: User },
+  { id: "yes-family", label: "Yes, I am a family member with the legal right to sell", icon: Heart },
+  { id: "no", label: "No, I am not", icon: AlertTriangle },
 ]
 
 const LISTED_OPTIONS = [
-  { id: "not-listed", label: "No, it is not listed" },
-  { id: "listed-realtor", label: "Yes, listed with a realtor" },
-  { id: "listed-fsbo", label: "Yes, listed for sale by owner" },
+  { id: "not-listed", label: "No, it is not listed", icon: ShieldCheck },
+  { id: "listed-realtor", label: "Yes, listed with a realtor", icon: Briefcase },
+  { id: "listed-fsbo", label: "Yes, listed for sale by owner", icon: Tag },
 ]
 
 const TIMELINE_OPTIONS = [
-  { id: "asap", label: "ASAP (Within 7 days)" },
-  { id: "2-weeks", label: "Within 2 weeks" },
-  { id: "30-days", label: "Within 30 days" },
-  { id: "60-days", label: "Within 60 days" },
-  { id: "flexible", label: "I'm flexible" },
+  { id: "asap", label: "ASAP (Within 7 days)", icon: Zap },
+  { id: "2-weeks", label: "Within 2 weeks", icon: CalendarClock },
+  { id: "30-days", label: "Within 30 days", icon: CalendarDays },
+  { id: "60-days", label: "Within 60 days", icon: Hourglass },
+  { id: "flexible", label: "I'm flexible", icon: Eye },
 ]
 
 const CONDITION_OPTIONS = [
-  { id: "excellent", label: "Excellent - Move-in ready" },
-  { id: "good", label: "Good - Minor repairs needed" },
-  { id: "fair", label: "Fair - Needs some work" },
-  { id: "poor", label: "Poor - Major repairs needed" },
-  { id: "distressed", label: "Distressed - Significant issues" },
+  { id: "excellent", label: "Excellent - Move-in ready", icon: Sparkles },
+  { id: "good", label: "Good - Minor repairs needed", icon: Smile },
+  { id: "fair", label: "Fair - Needs some work", icon: Wrench },
+  { id: "poor", label: "Poor - Major repairs needed", icon: HardHat },
+  { id: "distressed", label: "Distressed - Significant issues", icon: AlertTriangle },
 ]
 
 const REASON_OPTIONS = [
-  { id: "foreclosure", label: "Facing foreclosure" },
-  { id: "behind-payments", label: "Behind on payments" },
-  { id: "inherited", label: "Inherited property" },
-  { id: "divorce", label: "Divorce or separation" },
-  { id: "relocation", label: "Job relocation" },
-  { id: "downsizing", label: "Downsizing" },
-  { id: "repairs", label: "Can't afford repairs" },
-  { id: "other", label: "Other" },
+  { id: "foreclosure", label: "Facing foreclosure", icon: AlertTriangle },
+  { id: "behind-payments", label: "Behind on payments", icon: Anchor },
+  { id: "inherited", label: "Inherited property", icon: Gift },
+  { id: "divorce", label: "Divorce or separation", icon: Split },
+  { id: "relocation", label: "Job relocation", icon: Plane },
+  { id: "downsizing", label: "Downsizing", icon: Shrink },
+  { id: "repairs", label: "Can't afford repairs", icon: Hammer },
+  { id: "other", label: "Other", icon: HelpCircle },
 ]
 
 const OWNERSHIP_LENGTH_OPTIONS = [
-  { id: "less-than-3", label: "Less than 3 years" },
-  { id: "3-to-5", label: "3 to 5 years" },
-  { id: "5-to-10", label: "5 to 10 years" },
-  { id: "10-plus", label: "10+ years" },
+  { id: "less-than-3", label: "Less than 3 years", icon: Sprout },
+  { id: "3-to-5", label: "3 to 5 years", icon: TreePine },
+  { id: "5-to-10", label: "5 to 10 years", icon: Anchor },
+  { id: "10-plus", label: "10+ years", icon: Crown },
 ]
 
 // ─── Lead scoring (browser-side) ───────────────────────────────────────
@@ -194,6 +229,7 @@ function validateName(name: string): { valid: boolean; msg: string } {
 interface SurveyCardProps {
   phoneDisplay?: string
   phoneHref?: string
+  accentColor?: string
   serviceAreas?: ServiceArea[]
   disqualifiedPropertyTypes?: string[]
   // Additive seed props for the advertorial sticky-bar -> popup flow.
@@ -204,7 +240,7 @@ interface SurveyCardProps {
   initialStep?: number
 }
 
-export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "8000000000", serviceAreas = [], disqualifiedPropertyTypes = ["mobile-home", "land", "other"], initialAddress, initialStep }: SurveyCardProps) {
+export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "8000000000", accentColor = "#2563eb", serviceAreas = [], disqualifiedPropertyTypes = ["mobile-home", "land", "other"], initialAddress, initialStep }: SurveyCardProps) {
   const [step, setStep] = useState(initialStep && initialStep >= 2 && initialStep <= 8 ? initialStep : 1)
   const [surveyData, setSurveyData] = useState<SurveyData>({
     address: initialAddress ?? "",
@@ -391,22 +427,38 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
   }
 
   const renderOptionButton = (
-    option: { id: string; label: string },
+    option: { id: string; label: string; icon: LucideIcon },
     selectedValue: string,
     field: keyof SurveyData
-  ) => (
-    <button
-      key={option.id}
-      onClick={() => handleOptionSelect(field, option.id)}
-      className={`w-full rounded-xl border px-4 py-3 text-left text-sm font-medium transition-all ${
-        selectedValue === option.id
-          ? "border-[var(--accent)] bg-[var(--accent)]/10 text-gray-900"
-          : "border-gray-200 bg-white text-gray-700 hover:border-[var(--accent)]/50 hover:bg-gray-50"
-      }`}
-    >
-      {option.label}
-    </button>
-  )
+  ) => {
+    const Icon = option.icon
+    const selected = selectedValue === option.id
+    return (
+      <button
+        key={option.id}
+        type="button"
+        onClick={() => handleOptionSelect(field, option.id)}
+        className="group w-full min-h-14 rounded-xl border-2 px-4 py-3 text-left text-base font-medium transition-all active:scale-[0.98] flex items-center gap-3"
+        style={{
+          borderColor: selected ? accentColor : "#e5e7eb",
+          backgroundColor: selected ? `${accentColor}0D` : "#ffffff",
+          color: selected ? accentColor : "#111827",
+        }}
+      >
+        <span
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg"
+          style={{
+            backgroundColor: selected ? `${accentColor}1A` : "#f3f4f6",
+            color: selected ? accentColor : "#4b5563",
+          }}
+        >
+          <Icon className="h-5 w-5" strokeWidth={2.2} />
+        </span>
+        <span className="flex-1">{option.label}</span>
+        <ChevronRight className="h-5 w-5 text-gray-300 group-hover:translate-x-0.5 transition-transform" />
+      </button>
+    )
+  }
 
   if (isDisqualified) {
     const disqualifyMessages: Record<string, { title: string; message: string; detail: string }> = {
@@ -434,19 +486,20 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
     const msg = disqualifyMessages[disqualifyReason] || disqualifyMessages.notOwner
 
     return (
-      <div className="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
+      <div className="w-full rounded-2xl border border-gray-100 bg-white p-6 md:p-8 shadow-md">
         <div className="flex flex-col items-center gap-5 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
             <XCircle className="h-7 w-7 text-red-500" />
           </div>
           <div>
-            <h2 className="text-2xl font-semibold text-gray-900">{msg.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{msg.title}</h2>
             <p className="mt-2 text-gray-600">{msg.message}</p>
             <p className="mt-4 text-sm text-gray-500">{msg.detail}</p>
           </div>
           <a
             href={`tel:${phoneHref}`}
-            className="mt-2 inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3 text-white hover:opacity-90 transition-opacity"
+            className="mt-2 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-white hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: accentColor }}
           >
             Call Us: {phoneDisplay}
           </a>
@@ -457,13 +510,13 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
 
   if (isSubmitted) {
     return (
-      <div className="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
+      <div className="w-full rounded-2xl border border-gray-100 bg-white p-6 md:p-8 shadow-md">
         <div className="flex flex-col items-center gap-5 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#22c55e]/10">
             <Check className="h-7 w-7 text-[#22c55e]" />
           </div>
           <div>
-            <h2 className="text-2xl font-semibold text-gray-900">Thank You, {surveyData.firstName}!</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Thank You, {surveyData.firstName}!</h2>
             <p className="mt-2 text-gray-600">We've received your information and will be in touch shortly.</p>
             <p className="mt-4 text-sm text-gray-500">One of our team members will call you within 24 hours.</p>
           </div>
@@ -473,21 +526,20 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
   }
 
   return (
-    <div className="w-full rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
+    <div className="w-full rounded-2xl border border-gray-100 bg-white p-6 md:p-8 shadow-md">
       <div className="flex flex-col gap-5">
         {/* Progress indicator */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Home className="h-5 w-5 text-[var(--accent)]" />
+            <Home className="h-5 w-5" style={{ color: accentColor }} />
             <span className="text-sm text-gray-600">Step {step} of {totalSteps}</span>
           </div>
           <div className="flex gap-1">
             {Array.from({ length: totalSteps }).map((_, i) => (
               <div
                 key={i}
-                className={`h-1.5 w-6 rounded-full transition-colors ${
-                  i < step ? "bg-[var(--accent)]" : "bg-gray-200"
-                }`}
+                className="h-1.5 w-6 rounded-full transition-colors"
+                style={{ backgroundColor: i < step ? accentColor : "#e5e7eb" }}
               />
             ))}
           </div>
@@ -496,7 +548,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         {step === 1 && (
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">What's your property address?</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">What's your property address?</h2>
               <p className="mt-1 text-sm text-gray-500">Start typing and select your address from the dropdown.</p>
             </div>
             <AddressAutocomplete
@@ -514,7 +566,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         {step === 2 && (
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">What type of property is it?</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">What type of property is it?</h2>
               <p className="mt-1 text-sm text-gray-500">Select the option that best describes your property.</p>
             </div>
             <div className="flex flex-col gap-2">
@@ -526,7 +578,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         {step === 3 && (
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">Are you the legal homeowner?</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">Are you the legal homeowner?</h2>
               <p className="mt-1 text-sm text-gray-500">This helps us understand who we'll be working with.</p>
             </div>
             <div className="flex flex-col gap-2">
@@ -538,7 +590,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         {step === 4 && (
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">Is the property currently listed on the market?</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">Is the property currently listed on the market?</h2>
               <p className="mt-1 text-sm text-gray-500">Let us know if the property is currently for sale.</p>
             </div>
             <div className="flex flex-col gap-2">
@@ -550,7 +602,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         {step === 5 && (
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">How fast are you looking to sell?</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">How fast are you looking to sell?</h2>
               <p className="mt-1 text-sm text-gray-500">Select your ideal timeline for closing.</p>
             </div>
             <div className="flex flex-col gap-2">
@@ -562,7 +614,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         {step === 6 && (
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">What condition is the property in?</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">What condition is the property in?</h2>
               <p className="mt-1 text-sm text-gray-500">Be honest - we buy houses in any condition.</p>
             </div>
             <div className="flex flex-col gap-2">
@@ -574,10 +626,10 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         {step === 7 && (
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">What's your reason for selling?</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">What's your reason for selling?</h2>
               <p className="mt-1 text-sm text-gray-500">This helps us understand your situation better.</p>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col gap-2">
               {REASON_OPTIONS.map((option) => renderOptionButton(option, surveyData.reason, "reason"))}
             </div>
           </div>
@@ -586,7 +638,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         {step === 8 && (
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">How long have you owned the home?</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">How long have you owned the home?</h2>
               <p className="mt-1 text-sm text-gray-500">This helps us tailor your offer.</p>
             </div>
             <div className="flex flex-col gap-2">
@@ -598,7 +650,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         {step === 9 && (
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">How can we reach you?</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">How can we reach you?</h2>
               <p className="mt-1 text-sm text-gray-500">We'll use this to send you your cash offer.</p>
             </div>
             <div className="flex flex-col gap-3">
@@ -611,7 +663,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
                       setSurveyData({ ...surveyData, firstName: e.target.value })
                       setValidationErrors({ ...validationErrors, firstName: "" })
                     }}
-                    className={`h-12 rounded-xl border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[var(--accent)] focus:ring-[var(--accent)]/20 ${validationErrors.firstName ? "border-red-500" : ""}`}
+                    className={`h-14 rounded-xl border-2 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-gray-400 ${validationErrors.firstName ? "border-red-500" : ""}`}
                   />
                   {validationErrors.firstName && <p className="mt-1 text-xs text-red-500">{validationErrors.firstName}</p>}
                 </div>
@@ -623,7 +675,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
                       setSurveyData({ ...surveyData, lastName: e.target.value })
                       setValidationErrors({ ...validationErrors, lastName: "" })
                     }}
-                    className={`h-12 rounded-xl border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[var(--accent)] focus:ring-[var(--accent)]/20 ${validationErrors.lastName ? "border-red-500" : ""}`}
+                    className={`h-14 rounded-xl border-2 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-gray-400 ${validationErrors.lastName ? "border-red-500" : ""}`}
                   />
                   {validationErrors.lastName && <p className="mt-1 text-xs text-red-500">{validationErrors.lastName}</p>}
                 </div>
@@ -637,7 +689,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
                     setSurveyData({ ...surveyData, email: e.target.value })
                     setValidationErrors({ ...validationErrors, email: "" })
                   }}
-                  className={`h-12 rounded-xl border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[var(--accent)] focus:ring-[var(--accent)]/20 ${validationErrors.email ? "border-red-500" : ""}`}
+                  className={`h-14 rounded-xl border-2 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-gray-400 ${validationErrors.email ? "border-red-500" : ""}`}
                 />
                 {validationErrors.email && <p className="mt-1 text-xs text-red-500">{validationErrors.email}</p>}
               </div>
@@ -651,7 +703,7 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
                     setValidationErrors({ ...validationErrors, phone: "" })
                   }}
                   maxLength={14}
-                  className={`h-12 rounded-xl border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[var(--accent)] focus:ring-[var(--accent)]/20 ${validationErrors.phone ? "border-red-500" : ""}`}
+                  className={`h-14 rounded-xl border-2 border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-gray-400 ${validationErrors.phone ? "border-red-500" : ""}`}
                 />
                 {validationErrors.phone && <p className="mt-1 text-xs text-red-500">{validationErrors.phone}</p>}
               </div>
@@ -670,20 +722,13 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
         )}
 
         {/* Navigation */}
-        <div className="flex items-center justify-between">
-          <Button
-            variant="ghost"
-            onClick={handleBack}
-            disabled={step === 1}
-            className="text-gray-500 hover:text-gray-900 hover:bg-gray-100 disabled:opacity-0"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <Button
+        <div className="flex flex-col gap-3">
+          <button
+            type="button"
             onClick={handleNext}
             disabled={!canProceed() || isSubmitting}
-            className="bg-[var(--accent)] text-white hover:bg-[var(--accent)] disabled:opacity-50"
+            className="w-full h-14 md:h-16 rounded-xl text-white font-semibold text-lg md:text-xl shadow-md transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            style={{ backgroundColor: accentColor }}
           >
             {isSubmitting ? (
               <span className="flex items-center gap-2">
@@ -693,10 +738,19 @@ export function SurveyCard({ phoneDisplay = "(800) 000-0000", phoneHref = "80000
             ) : (
               <>
                 {step === totalSteps ? "Get My Cash Offer" : "Continue"}
-                {step !== totalSteps && <ArrowRight className="ml-2 h-4 w-4" />}
+                {step !== totalSteps && <ArrowRight className="h-5 w-5" />}
               </>
             )}
-          </Button>
+          </button>
+          {step > 1 && (
+            <button
+              type="button"
+              onClick={handleBack}
+              className="w-full text-sm text-gray-500 hover:text-gray-700 text-center"
+            >
+              ← Back
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -295,7 +295,7 @@ export function AdvertorialPage({
             <p style={{ color: C.muted }} className="mt-1 text-[15px]">A handful of quick questions. No cost, nothing owed, no arm-twisting.</p>
           </div>
           <div className="flex justify-center">
-            <SurveyCard phoneDisplay={phoneDisplay} phoneHref={phoneHref} serviceAreas={serviceAreas} />
+            <SurveyCard accentColor={accentColor} phoneDisplay={phoneDisplay} phoneHref={phoneHref} serviceAreas={serviceAreas} />
           </div>
           <p style={{ color: C.muted }} className="text-center text-[13px] mt-3.5 max-w-[460px] mx-auto leading-[1.5]">
             Your information stays private. We never sell or share it. Requesting an offer is free and carries no obligation.
@@ -386,6 +386,7 @@ export function AdvertorialPage({
             <button onClick={() => setModalOpen(false)} aria-label="Close" className="absolute -top-3 -right-3 z-10 h-9 w-9 rounded-full bg-white text-gray-700 text-xl font-bold shadow-md flex items-center justify-center hover:bg-gray-100">×</button>
             <SurveyCard
               key={seeded?.address || "modal"}
+              accentColor={accentColor}
               phoneDisplay={phoneDisplay}
               phoneHref={phoneHref}
               serviceAreas={serviceAreas}
