@@ -30,12 +30,9 @@ export default function HomePage() {
       </header>
 
       <div className="mx-auto max-w-xl px-4 pt-6 pb-12 md:pt-10">
-        {/* Centered hero — copy stays config-driven (Legacy's HEADLINE / SUBHEADLINE) */}
+        {/* Centered hero — headline matched to the Seattle/WA service area */}
         <h1 className="text-center text-2xl font-bold leading-tight text-gray-900 md:text-3xl mb-2 text-balance">
-          {config.headline}
-          {config.headlineAccent && (
-            <span style={{ color: config.accentColor }}> {config.headlineAccent}</span>
-          )}
+          Washington Homeowners: Sell Your House Fast, For Cash, As-Is
         </h1>
         <p className="text-center text-sm md:text-base text-gray-600 mb-6 md:mb-8">
           {config.subheadline}
