@@ -36,6 +36,22 @@ declare global {
   }
 }
 
+// Legacy Offer is a Washington-statewide funnel. The address bar is locked to WA:
+// the dropdown is bounded to a WA rectangle (strictBounds) and any selection whose
+// state is not WA is treated as out-of-area. Override via NEXT_PUBLIC_ALLOWED_STATES
+// (comma-separated, e.g. "WA,OR"); defaults to WA so the gate never silently opens
+// to nationwide if the env var is missing.
+const ALLOWED_STATES = (process.env.NEXT_PUBLIC_ALLOWED_STATES || "WA")
+  .split(",")
+  .map((s) => s.trim().toUpperCase())
+  .filter(Boolean)
+
+// Padded bounding boxes (sw/ne) covering each whole state, used for the strictBounds
+// dropdown so Google only suggests in-state addresses.
+const STATE_BOUNDS: Record<string, { sw: google.maps.LatLngLiteral; ne: google.maps.LatLngLiteral }> = {
+  WA: { sw: { lat: 45.5, lng: -124.85 }, ne: { lat: 49.01, lng: -116.9 } },
+}
+
 function haversineDistanceMiles(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 3958.8
   const dLat = (lat2 - lat1) * Math.PI / 180
@@ -118,10 +134,17 @@ export function AddressAutocomplete({
   const initAutocomplete = () => {
     if (!inputRef.current || !window.google?.maps?.places) return
 
-    // Build bounds covering all service area circles
+    // Build dropdown bounds. The state geofence (Legacy = WA) takes precedence over
+    // the optional service-area circles.
     let bounds: google.maps.LatLngBounds | undefined
-    const hasServiceAreas = serviceAreas.length > 0
-    if (hasServiceAreas) {
+    const stateBoxes = ALLOWED_STATES.map((s) => STATE_BOUNDS[s]).filter(Boolean)
+    if (stateBoxes.length > 0) {
+      bounds = new google.maps.LatLngBounds()
+      stateBoxes.forEach((b) => {
+        bounds!.extend(b.sw)
+        bounds!.extend(b.ne)
+      })
+    } else if (serviceAreas.length > 0) {
       bounds = new google.maps.LatLngBounds()
       serviceAreas.forEach(area => {
         // Approximate circle bounding box (1 degree lat ≈ 69 miles)
@@ -136,8 +159,8 @@ export function AddressAutocomplete({
       componentRestrictions: { country: "us" },
       types: ["address"],
       fields: ["formatted_address", "address_components", "geometry"],
-      // strictBounds when a service-area box exists keeps out-of-area suggestions
-      // out of the dropdown (not just biased). No bounds = nationwide (no restriction).
+      // strictBounds keeps out-of-area suggestions out of the dropdown (not just biased).
+      // No bounds = nationwide (no restriction).
       ...(bounds ? { bounds, strictBounds: true } : {}),
     })
 
@@ -164,8 +187,15 @@ export function AddressAutocomplete({
 
       const details: AddressDetails = { formattedAddress: place.formatted_address, lat, lng, state, city, county }
 
-      // Service area validation
-      if (serviceAreas.length > 0 && lat !== undefined && lng !== undefined) {
+      // Geofence. The state-level gate (Legacy = WA statewide) takes precedence;
+      // otherwise fall back to the optional service-area circles.
+      if (ALLOWED_STATES.length > 0) {
+        if (state && !ALLOWED_STATES.includes(state.toUpperCase())) {
+          onChange(place.formatted_address)
+          onOutOfArea?.(place.formatted_address)
+          return
+        }
+      } else if (serviceAreas.length > 0 && lat !== undefined && lng !== undefined) {
         if (!isInServiceArea(lat, lng, serviceAreas)) {
           onChange(place.formatted_address)
           onOutOfArea?.(place.formatted_address)
