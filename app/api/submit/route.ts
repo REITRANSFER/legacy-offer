@@ -59,8 +59,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Address required" }, { status: 400 })
     }
 
-    // Add server IP to payload
-    const payload = { ...data, server_ip: ip }
+    // Add server IP to payload. Also backfill `ip` (the v3 form doesn't capture
+    // client IP) so the CRM's `ip` field and the Discord IP line are populated.
+    const payload = { ...data, server_ip: ip, ip: data.ip || ip }
 
     const webhookUrl = process.env.WEBHOOK_URL
     if (webhookUrl) {
