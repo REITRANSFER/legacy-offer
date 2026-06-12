@@ -1,5 +1,6 @@
 import Image from "next/image"
-import { SurveyCard } from "@/components/survey/survey-card"
+import { ZeroDistractionForm } from "@/components/survey/zero-distraction-form"
+import { TrackingCapture } from "@/components/tracking/tracking-capture"
 import { Footer } from "@/components/layout/footer"
 import config from "@/lib/config"
 
@@ -12,6 +13,9 @@ export default function HomePage() {
 
   return (
     <main className="relative min-h-screen bg-gray-50">
+      {/* Captures UTMs / click IDs / fbp / fbc / referrer on mount, persists to
+          sessionStorage so the form attaches them at submit. Renders nothing. */}
+      <TrackingCapture />
       {/* Minimal white header — logo only (OC v3 zero-distraction look) */}
       <header className="w-full bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-3 lg:px-8">
@@ -43,12 +47,12 @@ export default function HomePage() {
 
         {/* The form — Legacy's existing SurveyCard (submit/scoring/pixel unchanged),
             reskinned to the v3 look. Accent is passed as a prop (no CSS-var dependency). */}
-        <SurveyCard
+        <ZeroDistractionForm
           accentColor={config.accentColor}
-          phoneDisplay={config.phoneDisplay}
-          phoneHref={config.phoneHref}
           serviceAreas={parsedServiceAreas}
           disqualifiedPropertyTypes={disqualifiedPropertyTypes}
+          phoneHref={config.phoneHref}
+          phoneDisplay={config.phoneDisplay}
         />
       </div>
 
